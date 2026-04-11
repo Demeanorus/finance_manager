@@ -19,3 +19,8 @@ def save_data(data: dict) -> None:
     """Сохраняет данные в JSON-файл."""
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+
+
+def get_data_file_path() -> Path:
+    """Возвращает путь к файлу данных (для удобства)"""
+    return DATA_FILE

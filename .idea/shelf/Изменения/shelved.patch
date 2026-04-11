@@ -1,0 +1,354 @@
+Index: data_handler.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># data_handler.py\r\nimport json\r\nfrom pathlib import Path\r\n\r\n# Константа с путем к файлу\r\nDATA_FILE = Path(\"finance.json\")\r\n\r\ndef load_data() -> dict:\r\n    \"\"\"Загружает данные из JSON-файла. Если файла нет - возвращает пустую структуру.\"\"\"\r\n    try:\r\n        with open(DATA_FILE, \"r\", encoding=\"utf-8\") as file:\r\n            return json.load(file)\r\n    except (FileNotFoundError, json.JSONDecodeError):\r\n        # Возвращаем базовую структуру данных\r\n        return {\"operations\": []}\r\n\r\n\r\ndef save_data(data: dict) -> None:\r\n    \"\"\"Сохраняет данные в JSON-файл.\"\"\"\r\n    with open(DATA_FILE, \"w\", encoding=\"utf-8\") as file:\r\n        json.dump(data, file, ensure_ascii=False, indent=4)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data_handler.py b/data_handler.py
+--- a/data_handler.py	(revision bab90f640975340acb77d4527cbd5098982f5f4e)
++++ b/data_handler.py	(date 1775828815407)
+@@ -19,3 +19,29 @@
+     """Сохраняет данные в JSON-файл."""
+     with open(DATA_FILE, "w", encoding="utf-8") as file:
+         json.dump(data, file, ensure_ascii=False, indent=4)
++
++
++def get_data_file_path() -> Path:
++    """Возвращает путь к файлу данных (для удобства)"""
++    return DATA_FILE
++# data_handler.py
++import json
++from pathlib import Path
++
++# Константа с путем к файлу
++DATA_FILE = Path("finance.json")
++
++def load_data() -> dict:
++    """Загружает данные из JSON-файла. Если файла нет - возвращает пустую структуру."""
++    try:
++        with open(DATA_FILE, "r", encoding="utf-8") as file:
++            return json.load(file)
++    except (FileNotFoundError, json.JSONDecodeError):
++        # Возвращаем базовую структуру данных
++        return {"operations": []}
++
++
++def save_data(data: dict) -> None:
++    """Сохраняет данные в JSON-файл."""
++    with open(DATA_FILE, "w", encoding="utf-8") as file:
++        json.dump(data, file, ensure_ascii=False, indent=4)
+Index: project_structure.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>finance_manager/\r\n├── main.py                 ← Главный файл (запуск программы)\r\n├── data_handler.py         ← Всё, что связано с файлами (load/save)\r\n├── operations.py           ← Основные операции (add, show_balance и т.д.)\r\n├── utils.py                ← Вспомогательные функции (если будут)\r\n└── finance.json            ← Файл с данными (создастся автоматически)\r\ndata_handler {\r\n=====================================================================\r\n*********************************************************************\r\nСтроки 2-3:\r\n\r\nimport json - Подключаем встроенный модуль Python, который умеет\r\nработать с JSON-файлами (читать и записывать).\r\n\r\nfrom pathlib import Path - Способ работы с путями к файлам.\r\nPath лучше, чем обычная строка, потому что он удобнее и безопаснее (особенно\r\nна разных операционных системах).\r\n====================================================================\r\nСтрока - 6:\r\n\r\nСоздаём константу (переменную которую не планируем менять).\r\nDATA_FILE - имя константы. По соглашению константы пишутся заглавными буквами.\r\nPath(\"finance.json\") - создаёт объект пути. Теперь мы можем использовать этот\r\nобъект для открытия файла.\r\n====================================================================\r\nСтрока - 8:\r\n\r\ndef load_data() - объявляем функцию.\r\n() - функция не принимает никаких аргументов.\r\n-> dict - (подсказка типа). Это помогает в будущем понять, что возвращает\r\nфункция.\r\n====================================================================\r\nСтрока - 9:\r\n\r\nЭто docstring - многострочный комментарий, который описывает, что делает\r\nфункция.\r\n===================================================================\r\nСтрока - 10:\r\n\r\nНачинаем блок обработки исключений (ошибок).\r\ntry означает: \"попробуй выполнить этот код, и если возникла ошибка -\r\nперейди в except\"\r\n===================================================================\r\nСтрока 11-12:\r\n\r\nwith open(...) as file: - контекстный менеджер. Открывает файл и автоматически\r\nзакрывает его после использования (даже если внутри будет ошибка).\r\n* DATA_FILE - путь к файлу (объект Path).\r\n* \"r\" - режим открытия: чтения (read).\r\n* encoding=\"utf-8\" - указываем кодировку, чтобы русские буквы правильно читались\r\nи не было кракозябр.\r\njson.load(file) - читает содержимое файла и превращает JSON в обычный Python-словарь.\r\nreturn - сразу возвращаем этот словарь из функции.\r\n==================================================================\r\nСтроки 13-15:\r\n\r\nexcept (...): - если в блоке try произошла одна из этих двух ошибок,\r\nвыполняем код внутри except.\r\n* FileNotFoundError - возникает, когда файл finance.json ещё не\r\nсуществует (первый запуск программы)\r\n* json.JSONDecodeError - возникает, если файл существует, но поврежден\r\nили имеет неправильный JSON-формат.\r\nreturn {\"operations\": []} - возвращает пустой словарь с ключом\r\n\"operations\", внутри которого пустой список. Это наша \"базовая структура\"\r\nданных. Благодаря этому программа не упадёт при первом запуске.\r\n==================================================================\r\nИтоговый смысл всей функции:\r\n\r\nФункция load_data() пытается открыть файл finance.json и загрузить из него\r\nданные.\r\nЕсли файл не найден или испорчен - она спокойно возвращает пустую структуру\r\n{\"operations\": []}, чтобы программа могла продолжить работу.\r\n******************************************************************\r\n==================================================================\r\nСтрока - 18:\r\n\r\ndef save_data - объявляем функцию\r\n(data: dict) - функция пронимает один параметр под названием data, и\r\nмы указываем, что это должен быть словарь (dict).\r\n-> None - Это означает что функция только сохраняет данные и ничего не возвращает\r\n==================================================================\r\nСтрока - 20:\r\n\r\nwith open(...) - Снова используем контекстный менеджер.\r\nDATA_FILE - используем константу, объявленную выше.\r\n\"w\" - режим записи (write). Если файл не существует - он будет создан.\r\nЕсли существует - будет полностью перезаписан.\r\nencoding=\"utf-8\" - обязательно для русских букв.\r\nas file: - открытый файл будет доступен внутри блока под именем file.\r\n=================================================================\r\nСтрока - 21\r\n\r\njson.dump() - это функция, которая записывает Python-объект (в нашем\r\nслучае словарь) в файл в формате JSON.\r\n* Параметры\r\n    1. data - то, что мы хотим сохранить (наш словарь с операциями).\r\n    2. file - объект открытого файла, куда будем записывать.\r\n    3. ensure_ascii=False - очень важный параметр.\r\n       Если поставить True (по умолчанию), все русские буквы будут\r\n       закодированы в Unicode (\\u041f\\u0440\\u0438\\u0432\\u0435\\u0442).\r\n       С False русские буквы сохраняются нормально - как \"Привет\"\r\n    4. indent=4 - делает JSON-файл красивым и читаемым (отступы в 4 пробела).\r\n       Без этого весь файл будет в одну строку.\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/project_structure.txt b/project_structure.txt
+--- a/project_structure.txt	(revision bab90f640975340acb77d4527cbd5098982f5f4e)
++++ b/project_structure.txt	(date 1775907532405)
+@@ -4,6 +4,7 @@
+ ├── operations.py           ← Основные операции (add, show_balance и т.д.)
+ ├── utils.py                ← Вспомогательные функции (если будут)
+ └── finance.json            ← Файл с данными (создастся автоматически)
++
+ data_handler {
+ =====================================================================
+ *********************************************************************
+@@ -88,7 +89,7 @@
+ encoding="utf-8" - обязательно для русских букв.
+ as file: - открытый файл будет доступен внутри блока под именем file.
+ =================================================================
+-Строка - 21
++Строка - 21:
+ 
+ json.dump() - это функция, которая записывает Python-объект (в нашем
+ случае словарь) в файл в формате JSON.
+@@ -101,4 +102,102 @@
+        С False русские буквы сохраняются нормально - как "Привет"
+     4. indent=4 - делает JSON-файл красивым и читаемым (отступы в 4 пробела).
+        Без этого весь файл будет в одну строку.
++******************************************************************
++==================================================================
++Строка - 24:
++
++def get_data_file_path() - объявляем функцию.
++Название функции - get_ - значит "получить", data_file_path - путь к
++файлу данных.
++() - функция не принимает никаких аргументов.
++-> Path - говорит что функция возвращает объект типа Path (из
++модуля pathlib).
++==================================================================
++Строка - 26:
++
++Простая конструкция: вернуть значение константы DATA_FILE.
++==================================================================
++(               Зачем нужна эта функция.
++    1. Инкапсуляция - в будущем будет проще изменить
++     логику получения пути к файлу.
++    2. Читаемость - при использовании этой функции в
++     других файлах, это будет выглядеть понятнее, чем
++     просто (DATA_FILE))
++******************************************************************
++}
++
++operations{
++==================================================================
++Строки 2-4:
++
++datetime - импортируем только класс, чтобы получать текущую дату и время
++from collections import defaultdict - импортируем defaultdict. Он будет
++нужен позже в функции show_categories/
++from data_handler import dave_data - импортируем функцию из другого файла
++==================================================================
++Строка - 7:
++
++def add_operation(data: dict) -> None - Объявляем функцию.
++data: dict - принимаем словарь с данными (наш список операций).
++-> None - функция ничего не возвращает, только добавляет операцию и
++сохраняет файл.
++==================================================================
++Строка - 12:
++
++while True: - бесконечный цикл. Мы будем выходить из него только когда
++пользователь введёт корректную сумму.
++==================================================================
++Строки 13-20:
++
++tey: - пытаемся выполнить код, который может вызвать ошибку.
++if amount <= 0: - проверяем, что сумма положительная. Если нет:
++ * Выводим сообщение
++ * continue - Возвращаемся в начало while True (просим ввести сумму заново)
++break - выходим из цикла, если сумма введена корректно.
++except ValueError: - если пользователь ввел не число (буквы, символы и
++т.д), то float() выбросит ошибку ValueError. Мы её ловим и выводим
++понятное сообщение. После этого цикл продолжается, и пользователь снова
++введёт сумму.
++==================================================================
++Строка 23-27:
++
++while True: - бесконечный цикл. Будет повторяться до тех пор, пока не
++выполнится break.
++op_type - просим пользователя ввести тип операции.
++.strip() - убираем пробелы в начале и в конце строки.
++.lower() - переводим весь текст в нижний регистр.
++if op_type in [...] - проверяем, ввел ли пользователь одно из двух
++правильных слов.
++break - если ввел правильно - выходим из цикла.
++print(...) - если ввел не правильно - выводим сообщение и цикл
++повторяется.
++==================================================================
++Строки 29-30:
++
++category - переменная для объяснения дохода или расхода,
++например (Зарплата, еда, подарки...)
++or "Прочее" - умный трюк. Если пользователь ничего не ввел и это
++будет как значение по умолчанию.
++==================================================================
++Строки 32-38:
++
++Создаем словарь operation, который будет хранить одну запись.
++datetime.now().strftime("%Y-%m-%d %H:%M") - получаем текущую дату и
++время в удобном формате.
++==================================================================
++Строки 40-42:
++
++data["opserations"].append(operation) - добавляем новую операцию в
++список операций.
++save_data(data) - сразу сохраняем изменения в файл finance.json.
++print(...) - выводим сообщение об успехе.
++==================================================================
++Строка 45:
++
++def calculate_balance - (<<вычислить баланс>>)
++(data: dict) - функция принимает один аргумент - словарь data.
++-> tuple[float,...] - Это говорит, что функция возвращает кортеж
++из трех чисел с плавающей точкой (доход, расход, баланс).
++==================================================================
++
+ }
+\ No newline at end of file
+Index: .idea/finance_manager.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\" />\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/finance_manager.iml b/.idea/finance_manager.iml
+--- a/.idea/finance_manager.iml	(revision bab90f640975340acb77d4527cbd5098982f5f4e)
++++ b/.idea/finance_manager.iml	(date 1775828815412)
+@@ -1,8 +1,10 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <module type="PYTHON_MODULE" version="4">
+   <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="inheritedJdk" />
++    <content url="file://$MODULE_DIR$">
++      <excludeFolder url="file://$MODULE_DIR$/.venv" />
++    </content>
++    <orderEntry type="jdk" jdkName="Python 3.14 (finance_manager)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"781c2692-7621-4f6e-b0d1-fb19b71423d0\" name=\"Изменения\" comment=\"\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\"><![CDATA[{\r\n  \"associatedIndex\": 1\r\n}]]></component>\r\n  <component name=\"ProjectId\" id=\"3C7BxvlLxRFzpXufkG4WohbLQVu\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Задача по умолчанию\">\r\n      <changelist id=\"781c2692-7621-4f6e-b0d1-fb19b71423d0\" name=\"Изменения\" comment=\"\" />\r\n      <created>1775726977970</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1775726977970</updated>\r\n    </task>\r\n    <servers />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision bab90f640975340acb77d4527cbd5098982f5f4e)
++++ b/.idea/workspace.xml	(date 1775829071391)
+@@ -1,26 +1,59 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="781c2692-7621-4f6e-b0d1-fb19b71423d0" name="Изменения" comment="" />
++    <list default="true" id="781c2692-7621-4f6e-b0d1-fb19b71423d0" name="Изменения" comment="">
++      <change afterPath="$PROJECT_DIR$/operations.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/finance_manager.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/finance_manager.iml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/data_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_handler.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/project_structure.txt" beforeDir="false" afterPath="$PROJECT_DIR$/project_structure.txt" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
+-  <component name="ProjectColorInfo"><![CDATA[{
+-  "associatedIndex": 1
+-}]]></component>
++  <component name="FileTemplateManagerImpl">
++    <option name="RECENT_TEMPLATES">
++      <list>
++        <option value="Python Script" />
++      </list>
++    </option>
++  </component>
++  <component name="Git.Settings">
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++  </component>
++  <component name="GitHubPullRequestSearchHistory">{
++  &quot;lastFilter&quot;: {
++    &quot;state&quot;: &quot;OPEN&quot;,
++    &quot;assignee&quot;: &quot;Demeanorus&quot;
++  }
++}</component>
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/Demeanorus/finance_manager.git&quot;,
++    &quot;accountId&quot;: &quot;ac416e41-3ad6-4172-96e7-39699252a2da&quot;
++  }
++}</component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 1
++}</component>
+   <component name="ProjectId" id="3C7BxvlLxRFzpXufkG4WohbLQVu" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "ModuleVcsDetector.initialDetectionPerformed": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;master&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+@@ -38,4 +71,15 @@
+     </task>
+     <servers />
+   </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
+ </project>
+\ No newline at end of file
+Index: operations.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/operations.py b/operations.py
+new file mode 100644
+--- /dev/null	(date 1775903204422)
++++ b/operations.py	(date 1775903204422)
+@@ -0,0 +1,53 @@
++# operations.py
++from datetime import datetime
++from collections import defaultdict
++from data_handler import save_data
++
++
++def add_operation(data: dict) -> None:
++    """Добавляет новую операцию (доход или расход)."""
++    print("\n=== Добавление операции ===")
++
++    # Защита ввода суммы
++    while True:
++        try:
++            amount = float(input("Сумма: "))
++            if amount <= 0:
++                print("Сумма должна быть больше 0!")
++                continue
++            break
++        except ValueError:
++            print("Ошибка! Введите число.")
++
++    # Защита ввода типа
++    while True:
++        op_type = input("Тип (доход/расход): ").strip().lower()
++        if op_type in ["доход", "расход"]:
++            break
++        print("Введите 'доход' или 'расход'")
++
++    category = input("Категория: ").strip() or "Прочее"
++    description = input("Описание (Не обязательно):  ").strip()
++
++    operation = {
++        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
++        "type": "Доход" if op_type == "доход" else "расход",
++        "amount": amount,
++        "category": category,
++        "description": description
++    }
++
++    data["operations"].append(operation)
++    save_data(data)
++    print("Операция успешно добавлена!")
++
++
++def calculate_balance(data: dict) -> tuple[float, float, float]:
++    """Возвращает (доходы, расходы, баланс)."""
++    incomes = sum(op["amount"] for op in data["operations"] if op["type"] == "Доход")
++    expenses = sum(op["amount"] for op in data["operations"] if op["type"] == "Расход")
++    balance = incomes - expenses
++    return incomes, expenses, balance
++
++
++
