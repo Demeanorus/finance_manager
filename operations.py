@@ -50,4 +50,43 @@ def calculate_balance(data: dict) -> tuple[float, float, float]:
     return incomes, expenses, balance
 
 
+def show_balance(data: dict) -> None:
+    """Показывает текущий баланс."""
+    incomes, expenses, balance = calculate_balance(data)
+
+    print("\n=== Текущий баланс ===")
+    print(f"Доходы:     +{incomes:,.2f} ₽")
+    print(f"Расходы:    -{expenses:,.2f} ₽")
+    print(f"Баланс:      {balance:,.2f} ₽")
+
+    if balance > 0:
+        print("Отлично! Положительный баланс.")
+    elif balance < 0:
+        print("Внимание! Ты в минусе.")
+
+
+def show_all_operations(data: dict) -> None:
+    """Выводит все операции (новые сверху)."""
+    if not data["operations"]:
+        print("\nПока нет операций.")
+        return
+
+    print("\n=== Все операции ===")
+    print("-" * 85)
+    print(f"{'Дата':<18} {'Тип':<8} {'Сумма':<12} {'Категория':<15} Описание")
+    print("-" * 85)
+
+    for op in reversed(data["operations"]):
+        sign = "+" if op["type"] == "Доход" else "-"
+        print(
+            f"{op['date']:<18} "
+            f"{op['type']:<8} "
+            f"{sign}{op['amount']:>9,.2f} ₽ "
+            f"{op['category']:<15} "
+            f"{op['description']}"
+        )
+
+
+
+
 
