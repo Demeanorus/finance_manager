@@ -31,7 +31,7 @@ def add_operation(data: dict) -> None:
 
     operation = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "type": "Доход" if op_type == "доход" else "расход",
+        "type": "Доход" if op_type == "доход" else "Расход",
         "amount": amount,
         "category": category,
         "description": description
@@ -87,6 +87,83 @@ def show_all_operations(data: dict) -> None:
         )
 
 
+def show_categories(data: dict) -> None:
+    """Статистика по категориям."""
+    expenses_by_cat = defaultdict(float)
+    incomes_by_cat = defaultdict(float)
+
+    for op in data["operations"]:
+        if op["type"] == "Расход":
+            expenses_by_cat[op["category"]] += op["amount"]
+        else:
+            incomes_by_cat[op["category"]] += op["amount"]
+
+    print("\n=== Расходы по категориям ===")
+    if expenses_by_cat:
+        for cat, total in sorted(expenses_by_cat.items(), key=lambda x: x[1], reverse=True):
+            print(f"{cat:<15} - {total:,.2f} ₽")
+    else:
+        print("Расходов пока нет.")
+
+    print("\n=== Доходы по категориям ===")
+    if incomes_by_cat:
+        for cat, total in sorted(incomes_by_cat.items(), key=lambda x: x[1], reverse=True):
+            print(f"{cat:<15} - {total:,.2f} ₽")
+    else:
+        print("Доходов пока нет.")
+
+
+def delete_operation(data: dict) -> None:
+    """Удаляет выбранную операцию по номеру."""
+    if not data["operations"]:
+        print("\nНет операций для удаления.")
+        return
+
+    show_all_operations(data)
+
+    try:
+        num = int(input("\nВведите номер операции для удаления: "))
+        if num < 1 or num > len(data["operations"]):
+            print("Ошибка: неверный номер!")
+            return
+
+        deleted_op = data["operations"].pop(len(data["operations"]) - num)
+
+        print(f"Удалена операция от {deleted_op['date']} - {deleted_op['type']} {deleted_op['amount']:,.2f} ₽")
+        save_data(data)
+
+    except ValueError:
+        print("Ошибка: введите число.")
+    except IndexError:
+        print("Операция не найдена.")
+
+
+def search_operations(data: dict) -> None:
+    """Поиск операций по категориям или описанию."""
+    if not data["operations"]:
+        print("\nНет операций для поиска.")
+        return
+
+    query = input("\nВведите текст для поиска (в категории или описании): ").strip().lower()
+    if not query:
+        print("Поисковой запрос пустой.")
+        return
+
+    found = [
+       op for op in data["operations"]
+        if query in op.get("category", "").lower() or query in op.get("description", "").lower()
+    ]
+
+    if not found:
+        print("Ничего не найдено.")
+        return
+
+    print(f"\nНайдено {len(found)} операций:")
+    print("-" * 80)
+    for op in reversed(found):
+        sign = "+" if op["type"] == "Доход" else "-"
+        print(f"{op['date']} | {op['type']} | {sign}{op['amount']:,.2f} ₽ |"
+              f"{op['category']} | {op['description']}")
 
 
 

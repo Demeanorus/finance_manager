@@ -1,0 +1,11 @@
+{
+    "operations": [
+        {
+            "date": "2026-04-15 14:45",
+            "type": "Доход",
+            "amount": 15555.0,
+            "category": "Прочее",
+            "description": ""
+        }
+    ]
+}
